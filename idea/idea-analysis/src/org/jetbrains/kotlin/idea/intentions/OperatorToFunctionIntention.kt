@@ -16,21 +16,14 @@
 
 package org.jetbrains.kotlin.idea.intentions
 
-import org.jetbrains.kotlin.psi.JetExpression
 import com.intellij.openapi.editor.Editor
-import org.jetbrains.kotlin.psi.JetPrefixExpression
-import org.jetbrains.kotlin.psi.JetPostfixExpression
-import org.jetbrains.kotlin.psi.JetBinaryExpression
-import org.jetbrains.kotlin.psi.JetArrayAccessExpression
-import org.jetbrains.kotlin.psi.JetCallExpression
-import org.jetbrains.kotlin.lexer.JetTokens
-import org.jetbrains.kotlin.psi.JetPsiFactory
-import org.jetbrains.kotlin.psi.JetElement
-import org.jetbrains.kotlin.psi.JetDotQualifiedExpression
-import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
-import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
+import org.jetbrains.kotlin.lexer.JetTokens
+import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
+import org.jetbrains.kotlin.types.expressions.OperatorConventions
 
 public class OperatorToFunctionIntention : JetSelfTargetingIntention<JetExpression>("operator.to.function", javaClass()) {
     companion object {
@@ -60,10 +53,10 @@ public class OperatorToFunctionIntention : JetSelfTargetingIntention<JetExpressi
             val bindingContext = element.analyze()
             val resolvedCall = element.getResolvedCall(bindingContext)
             val descriptor = resolvedCall?.getResultingDescriptor()
-            if (descriptor is FunctionDescriptor && descriptor.getName().asString() == "invoke") {
-                val parent = element.getParent()
-                if (parent is JetDotQualifiedExpression && element.getCalleeExpression()?.getText() == "invoke") return false
-                return !(element.getValueArgumentList() == null && element.getFunctionLiteralArguments().isEmpty())
+            if (descriptor is FunctionDescriptor && descriptor.getName() == OperatorConventions.INVOKE) {
+                if (element.getParent() is JetDotQualifiedExpression &&
+                    element.getCalleeExpression()?.getText() == OperatorConventions.INVOKE.asString()) return false
+                return element.getValueArgumentList() != null || element.getFunctionLiteralArguments().isNotEmpty()
             }
             return false
         }
@@ -177,7 +170,8 @@ public class OperatorToFunctionIntention : JetSelfTargetingIntention<JetExpressi
             val argumentString = arguments?.getText()?.trim("(", ")")
             val funcLitArgs = element.getFunctionLiteralArguments()
             val calleeText = callee.getText()
-            val transformation = if (argumentString == null) "$calleeText.invoke" else "$calleeText.invoke($argumentString)"
+            val transformation = "$calleeText.${OperatorConventions.INVOKE.asString()}" +
+                                 (if (argumentString == null) "" else "($argumentString)")
             val transformed = JetPsiFactory(element).createExpression(transformation)
             funcLitArgs.forEach { transformed.add(it) }
             return callee.getParent()!!.replace(transformed) as JetExpression
