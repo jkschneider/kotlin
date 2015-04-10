@@ -58,6 +58,20 @@ public fun <T> sequenceOf(progression: Progression<T>): Sequence<T> = object : S
     override fun iterator(): Iterator<T> = progression.iterator()
 }
 
+/**
+ * Returns an empty sequence.
+ */
+public fun <T> emptySequence(): Sequence<T> = EmptySequence
+
+private object EmptySequence : Sequence<Nothing> {
+    override fun iterator(): Iterator<Nothing> = EmptySequenceIterator
+}
+
+private object EmptySequenceIterator : Iterator<Nothing> {
+    override fun next(): Nothing = throw NoSuchElementException("Sequence is empty.")
+    override fun hasNext(): Boolean = false
+}
+
 deprecated("Use FilteringSequence<T> instead")
 public class FilteringStream<T>(stream: Stream<T>, sendWhen: Boolean = true, predicate: (T) -> Boolean)
 : Stream<T> by FilteringSequence<T>(stream.toSequence(), sendWhen, predicate)
