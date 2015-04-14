@@ -101,3 +101,8 @@ public fun Char.category(): CharCategory = CharCategory.valueOf(Character.getTyp
  * Returns the Unicode directionality property for the given character.
  */
 public fun Char.directionality(): CharDirectionality = CharDirectionality.valueOf(Character.getDirectionality(this).toInt())
+
+/**
+ * Returns the Unicode name of this character, or null if the code point of this character is unassigned.
+ */
+public fun Char.name(): String? = Character.getName(this.toInt())
