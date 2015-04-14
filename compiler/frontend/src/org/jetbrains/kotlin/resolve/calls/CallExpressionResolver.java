@@ -61,7 +61,13 @@ import static org.jetbrains.kotlin.resolve.scopes.receivers.ReceiversPackage.res
 import static org.jetbrains.kotlin.types.TypeUtils.NO_EXPECTED_TYPE;
 
 public class CallExpressionResolver {
-    @NotNull
+
+    private final CallResolver callResolver;
+
+    public CallExpressionResolver(@NotNull CallResolver callResolver) {
+        this.callResolver = callResolver;
+    }
+
     private ExpressionTypingServices expressionTypingServices;
 
     @Inject
@@ -75,7 +81,6 @@ public class CallExpressionResolver {
             @NotNull ResolutionContext context, @NotNull CheckValueArgumentsMode checkArguments,
             @NotNull boolean[] result
     ) {
-        CallResolver callResolver = expressionTypingServices.getCallResolver();
         OverloadResolutionResults<FunctionDescriptor> results = callResolver.resolveFunctionCall(
                 BasicCallResolutionContext.create(context, call, checkArguments));
         if (!results.isNothing()) {
@@ -93,7 +98,6 @@ public class CallExpressionResolver {
     ) {
         TemporaryTraceAndCache temporaryForVariable = TemporaryTraceAndCache.create(
                 context, "trace to resolve as local variable or property", nameExpression);
-        CallResolver callResolver = expressionTypingServices.getCallResolver();
         Call call = CallMaker.makePropertyCall(receiver, callOperationNode, nameExpression);
         BasicCallResolutionContext contextForVariable = BasicCallResolutionContext.create(
                 context.replaceTraceAndCache(temporaryForVariable),

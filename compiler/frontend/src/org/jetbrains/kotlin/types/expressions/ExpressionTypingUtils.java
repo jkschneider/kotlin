@@ -61,18 +61,24 @@ import static org.jetbrains.kotlin.types.TypeUtils.noExpectedType;
 
 public class ExpressionTypingUtils {
 
-    private final ExpressionTypingServices expressionTypingServices;
     private final CallResolver callResolver;
     private final KotlinBuiltIns builtIns;
+    private final Project project;
+    private final TypeResolver typeResolver;
+    private final DescriptorResolver descriptorResolver;
 
     public ExpressionTypingUtils(
-            @NotNull ExpressionTypingServices expressionTypingServices,
             @NotNull CallResolver resolver,
-            @NotNull KotlinBuiltIns builtIns
+            @NotNull KotlinBuiltIns builtIns,
+            @NotNull Project project,
+            @NotNull TypeResolver typeResolver,
+            @NotNull DescriptorResolver descriptorResolver
     ) {
-        this.expressionTypingServices = expressionTypingServices;
         this.callResolver = resolver;
         this.builtIns = builtIns;
+        this.project = project;
+        this.typeResolver = typeResolver;
+        this.descriptorResolver = descriptorResolver;
     }
 
     @NotNull
@@ -178,8 +184,7 @@ public class ExpressionTypingUtils {
                                                                                        name);
         List<JetExpression> fakeArguments = Lists.newArrayList();
         for (JetType type : argumentTypes) {
-            fakeArguments.add(createFakeExpressionOfType(expressionTypingServices.getProject(), traceWithFakeArgumentInfo,
-                                                         "fakeArgument" + fakeArguments.size(), type));
+            fakeArguments.add(createFakeExpressionOfType(project, traceWithFakeArgumentInfo, "fakeArgument" + fakeArguments.size(), type));
         }
         return makeAndResolveFakeCall(receiver, context.replaceBindingTrace(traceWithFakeArgumentInfo), fakeArguments, name,
                                       callElement).getSecond();
@@ -226,7 +231,7 @@ public class ExpressionTypingUtils {
             @NotNull Name name,
             @Nullable JetExpression callElement
     ) {
-        final JetReferenceExpression fake = JetPsiFactory(expressionTypingServices.getProject()).createSimpleName("fake");
+        final JetReferenceExpression fake = JetPsiFactory(project).createSimpleName("fake");
         TemporaryBindingTrace fakeTrace = TemporaryBindingTrace.create(context.trace, "trace to resolve fake call for", name);
         Call call = CallMaker.makeCallWithExpressions(callElement != null ? callElement : fake, receiver, null, fake, valueArguments);
         OverloadResolutionResults<FunctionDescriptor> results =
@@ -279,8 +284,8 @@ public class ExpressionTypingUtils {
             if (componentType == null) {
                 componentType = ErrorUtils.createErrorType(componentName + "() return type");
             }
-            VariableDescriptor variableDescriptor = expressionTypingServices.getDescriptorResolver().
-                resolveLocalVariableDescriptorWithType(writableScope, entry, componentType, context.trace);
+            VariableDescriptor variableDescriptor =
+                    descriptorResolver.resolveLocalVariableDescriptorWithType(writableScope, entry, componentType, context.trace);
 
             VariableDescriptor olderVariable = writableScope.getLocalVariable(variableDescriptor.getName());
             checkVariableShadowing(context, variableDescriptor, olderVariable);
@@ -302,7 +307,7 @@ public class ExpressionTypingUtils {
     private JetType getExpectedTypeForComponent(ExpressionTypingContext context, JetMultiDeclarationEntry entry) {
         JetTypeReference entryTypeRef = entry.getTypeReference();
         if (entryTypeRef != null) {
-            return expressionTypingServices.getTypeResolver().resolveType(context.scope, entryTypeRef, context.trace, true);
+            return typeResolver.resolveType(context.scope, entryTypeRef, context.trace, true);
         }
         else {
             return TypeUtils.NO_EXPECTED_TYPE;
