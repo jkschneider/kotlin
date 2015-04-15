@@ -159,6 +159,7 @@ public class KotlinBuiltIns {
         public final FqName data = fqName("data");
         public final FqName deprecated = fqName("deprecated");
         public final FqName tailRecursive = fqName("tailRecursive");
+        public final FqName inline = fqName("inline");
         public final FqName noinline = fqName("noinline");
 
         public final Set<FqNameUnsafe> primitiveTypes;
@@ -343,16 +344,6 @@ public class KotlinBuiltIns {
     @NotNull
     public ClassDescriptor getDataClassAnnotation() {
         return getBuiltInClassByName("data");
-    }
-
-    @NotNull
-    public static FqName getNoinlineClassAnnotationFqName() {
-        return FQ_NAMES.noinline;
-    }
-
-    @NotNull
-    public ClassDescriptor getInlineClassAnnotation() {
-        return getBuiltInClassByName("inline");
     }
 
     @NotNull
@@ -873,11 +864,15 @@ public class KotlinBuiltIns {
         return containsAnnotation(declarationDescriptor, FQ_NAMES.tailRecursive);
     }
 
+    public static boolean isNoinline(@NotNull DeclarationDescriptor descriptor) {
+        return containsAnnotation(descriptor, FQ_NAMES.noinline);
+    }
+
     public static boolean isSuppressAnnotation(@NotNull AnnotationDescriptor annotationDescriptor) {
         return isConstructedFromGivenClass(annotationDescriptor.getType(), FQ_NAMES.suppress);
     }
 
-    static boolean containsAnnotation(DeclarationDescriptor descriptor, FqName annotationClassFqName) {
+    private static boolean containsAnnotation(DeclarationDescriptor descriptor, FqName annotationClassFqName) {
         return descriptor.getOriginal().getAnnotations().findAnnotation(annotationClassFqName) != null;
     }
 
