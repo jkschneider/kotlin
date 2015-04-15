@@ -21,6 +21,7 @@ import com.intellij.codeInsight.lookup.*
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.util.Key
 import com.intellij.util.PlatformIcons
+import org.jetbrains.kotlin.builtins.InlineUtil
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.caches.resolve.ResolutionFacade
@@ -30,15 +31,11 @@ import org.jetbrains.kotlin.idea.util.FuzzyType
 import org.jetbrains.kotlin.idea.util.getImplicitReceiversWithInstance
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.getReceiverExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
 import org.jetbrains.kotlin.resolve.DescriptorUtils
-import org.jetbrains.kotlin.resolve.scopes.receivers.ExpressionReceiver
-import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValue
-import org.jetbrains.kotlin.types.expressions.ExpressionTypingUtils
 import java.util.ArrayList
 
 enum class ItemPriority {
@@ -254,8 +251,7 @@ fun returnExpressionItems(bindingContext: BindingContext, position: JetElement):
 
                 // check if the current function literal is inlined and stop processing outer declarations if it's not
                 val callee = call?.getCalleeExpression() as? JetReferenceExpression ?: break // not inlined
-                val target = bindingContext[BindingContext.REFERENCE_TARGET, callee] as? SimpleFunctionDescriptor ?: break // not inlined
-                if (!target.getInlineStrategy().isInline()) break // not inlined
+                if (!InlineUtil.isInline(bindingContext[BindingContext.REFERENCE_TARGET, callee])) break // not inlined
             }
             else {
                 if (parent.hasBlockBody()) {
