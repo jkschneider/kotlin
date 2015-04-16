@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.types.expressions;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +51,7 @@ import org.jetbrains.kotlin.types.checker.JetTypeChecker;
 import java.util.Collection;
 
 import static org.jetbrains.kotlin.diagnostics.Errors.*;
+import static org.jetbrains.kotlin.psi.JetPsiUtil.deparenthesizeWithResolutionStrategy;
 import static org.jetbrains.kotlin.resolve.BindingContext.AMBIGUOUS_REFERENCE_TARGET;
 import static org.jetbrains.kotlin.resolve.BindingContext.VARIABLE_REASSIGNMENT;
 import static org.jetbrains.kotlin.resolve.calls.context.ContextDependency.INDEPENDENT;
@@ -323,10 +325,16 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
 
     @NotNull
     protected JetTypeInfo visitAssignment(JetBinaryExpression expression, ExpressionTypingContext contextWithExpectedType) {
-        ExpressionTypingContext context =
+        final ExpressionTypingContext context =
                 contextWithExpectedType.replaceExpectedType(NO_EXPECTED_TYPE).replaceScope(scope).replaceContextDependency(INDEPENDENT);
         JetExpression leftOperand = expression.getLeft();
-        JetExpression left = components.expressionTypingServices.deparenthesizeWithTypeResolution(leftOperand, context);
+        JetExpression left = deparenthesizeWithResolutionStrategy(leftOperand, true, new Function<JetTypeReference, Void>() {
+            @Override
+            public Void apply(JetTypeReference reference) {
+                components.expressionTypingServices.getTypeResolver().resolveType(context.scope, reference, context.trace, true);
+                return null;
+            }
+        });
         JetExpression right = expression.getRight();
         if (left instanceof JetArrayAccessExpression) {
             JetArrayAccessExpression arrayAccessExpression = (JetArrayAccessExpression) left;

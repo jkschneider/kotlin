@@ -16,7 +16,6 @@
 
 package org.jetbrains.kotlin.types.expressions;
 
-import com.google.common.base.Function;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -352,20 +351,6 @@ public class ExpressionTypingServices {
             }
         }
         return result;
-    }
-
-    @Nullable
-    public JetExpression deparenthesizeWithTypeResolution(
-            @Nullable JetExpression expression,
-            @NotNull final ExpressionTypingContext context
-    ) {
-        return JetPsiUtil.deparenthesizeWithResolutionStrategy(expression, true, new Function<JetTypeReference, Void>() {
-            @Override
-            public Void apply(JetTypeReference reference) {
-                getTypeResolver().resolveType(context.scope, reference, context.trace, true);
-                return null;
-            }
-        });
     }
 
     public void resolveValueParameters(
