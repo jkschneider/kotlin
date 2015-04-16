@@ -59,20 +59,9 @@ public class ExpressionTypingServices {
     @NotNull
     private final ExpressionTypingComponents expressionTypingComponents;
 
-    private Project project;
     private CallResolver callResolver;
     private StatementFilter statementFilter;
     private KotlinBuiltIns builtIns;
-
-    @NotNull
-    public Project getProject() {
-        return project;
-    }
-
-    @Inject
-    public void setProject(@NotNull Project project) {
-        this.project = project;
-    }
 
     @NotNull
     public CallResolver getCallResolver() {

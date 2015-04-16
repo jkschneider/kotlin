@@ -240,7 +240,7 @@ public class DelegatedPropertyResolver {
         arguments.add(createExpressionForPropertyMetadata(psiFactory, propertyDescriptor));
 
         if (!isGet) {
-            JetReferenceExpression fakeArgument = (JetReferenceExpression) createFakeExpressionOfType(expressionTypingServices.getProject(), trace,
+            JetReferenceExpression fakeArgument = (JetReferenceExpression) createFakeExpressionOfType(delegateExpression.getProject(), trace,
                                                                              "fakeArgument" + arguments.size(),
                                                                              propertyDescriptor.getType());
             arguments.add(fakeArgument);
