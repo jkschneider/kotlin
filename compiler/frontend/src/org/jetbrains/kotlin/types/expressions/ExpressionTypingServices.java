@@ -30,13 +30,12 @@ import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.lexer.JetTokens;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.*;
-import org.jetbrains.kotlin.resolve.calls.CallExpressionResolver;
 import org.jetbrains.kotlin.resolve.calls.CallResolver;
 import org.jetbrains.kotlin.resolve.calls.checkers.AdditionalTypeChecker;
+import org.jetbrains.kotlin.resolve.calls.checkers.CallChecker;
 import org.jetbrains.kotlin.resolve.calls.checkers.CompositeChecker;
 import org.jetbrains.kotlin.resolve.calls.context.ContextDependency;
 import org.jetbrains.kotlin.resolve.calls.context.ResolutionContext;
-import org.jetbrains.kotlin.resolve.calls.checkers.CallChecker;
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo;
 import org.jetbrains.kotlin.resolve.constants.evaluate.ConstantExpressionEvaluator;
 import org.jetbrains.kotlin.resolve.scopes.JetScope;
@@ -50,7 +49,8 @@ import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.jetbrains.kotlin.types.TypeUtils.*;
+import static org.jetbrains.kotlin.types.TypeUtils.NO_EXPECTED_TYPE;
+import static org.jetbrains.kotlin.types.TypeUtils.UNIT_EXPECTED_TYPE;
 import static org.jetbrains.kotlin.types.expressions.CoercionStrategy.COERCION_TO_UNIT;
 
 public class ExpressionTypingServices {
@@ -62,7 +62,6 @@ public class ExpressionTypingServices {
 
     private Project project;
     private CallResolver callResolver;
-    private DescriptorResolver descriptorResolver;
     private TypeResolver typeResolver;
     private AnnotationResolver annotationResolver;
     private StatementFilter statementFilter;
@@ -86,16 +85,6 @@ public class ExpressionTypingServices {
     @Inject
     public void setCallResolver(@NotNull CallResolver callResolver) {
         this.callResolver = callResolver;
-    }
-
-    @NotNull
-    public DescriptorResolver getDescriptorResolver() {
-        return descriptorResolver;
-    }
-
-    @Inject
-    public void setDescriptorResolver(@NotNull DescriptorResolver descriptorResolver) {
-        this.descriptorResolver = descriptorResolver;
     }
 
     @NotNull

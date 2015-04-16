@@ -780,7 +780,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
         BasicCallResolutionContext callResolutionContext = BasicCallResolutionContext.create(
                 context.replaceTraceAndCache(temporaryTrace).replaceExpectedType(NO_EXPECTED_TYPE), call, CheckValueArgumentsMode.DISABLED);
         OverloadResolutionResults<CallableDescriptor> results =
-                components.expressionTypingServices.getCallResolver().resolveCallForMember(reference, callResolutionContext);
+                components.callResolver.resolveCallForMember(reference, callResolutionContext);
         if (!results.isNothing()) {
             temporaryTrace.commit();
             result[0] = true;
