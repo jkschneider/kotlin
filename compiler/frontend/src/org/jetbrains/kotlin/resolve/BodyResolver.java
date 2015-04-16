@@ -61,6 +61,7 @@ public class BodyResolver {
     private AnnotationResolver annotationResolver;
     private DelegatedPropertyResolver delegatedPropertyResolver;
     private FunctionAnalyzerExtension functionAnalyzerExtension;
+    private AdditionalCheckerProvider additionalCheckerProvider;
 
     @Inject
     public void setScriptBodyResolverResolver(@NotNull ScriptBodyResolver scriptBodyResolverResolver) {
@@ -107,6 +108,11 @@ public class BodyResolver {
         this.functionAnalyzerExtension = functionAnalyzerExtension;
     }
 
+    @Inject
+    public void setAdditionalCheckerProvider(AdditionalCheckerProvider additionalCheckerProvider) {
+        this.additionalCheckerProvider = additionalCheckerProvider;
+    }
+
     private void resolveBehaviorDeclarationBodies(@NotNull BodiesResolveContext c) {
         resolveDelegationSpecifierLists(c);
 
@@ -148,7 +154,7 @@ public class BodyResolver {
     ) {
         AnnotationResolver.resolveAnnotationsArguments(constructor.getModifierList(), trace);
 
-        final CallChecker callChecker = new ConstructorHeaderCallChecker(descriptor, expressionTypingServices.getCallChecker());
+        final CallChecker callChecker = new ConstructorHeaderCallChecker(descriptor, additionalCheckerProvider.getCallChecker());
         resolveFunctionBody(c, trace, constructor, descriptor, declaringScope,
                             new Function1<JetScope, DataFlowInfo>() {
                                 @Override
@@ -732,7 +738,7 @@ public class BodyResolver {
         expressionTypingServices.resolveValueParameters(
                 valueParameters, valueParameterDescriptors,
                 ExpressionTypingContext.newContext(
-                        expressionTypingServices, trace, innerScope, c.getOuterDataFlowInfo(), NO_EXPECTED_TYPE, callChecker)
+                        additionalCheckerProvider, trace, innerScope, c.getOuterDataFlowInfo(), NO_EXPECTED_TYPE, callChecker)
         );
 
         DataFlowInfo dataFlowInfo = null;

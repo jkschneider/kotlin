@@ -136,4 +136,9 @@ public class ExpressionTypingComponents {
     public ForLoopConventionsChecker getForLoopConventionsChecker() {
         return forLoopConventionsChecker;
     }
+
+    @NotNull
+    public AdditionalCheckerProvider getAdditionalCheckerProvider() {
+        return additionalCheckerProvider;
+    }
 }
