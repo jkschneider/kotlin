@@ -390,19 +390,18 @@
             <src refid="preloaderSources.path"/>
         </javac>
 
-        <jar jarfile="${kotlin-home}/lib/kotlin-preloader.jar">
-            <fileset dir="${output}/classes/preloader"/>
+        <pack-preloader jar-name="kotlin-preloader.jar" implementation-title="${manifest.impl.title.kotlin.preloader}">
+            <jar-content>
+                <fileset dir="${output}/classes/preloader"/>
+            </jar-content>
+        </pack-preloader>
 
-            <manifest>
-                <attribute name="Built-By" value="${manifest.impl.vendor}"/>
-
-                <attribute name="Implementation-Vendor" value="${manifest.impl.vendor}"/>
-                <attribute name="Implementation-Title" value="${manifest.impl.title.kotlin.preloader}"/>
-                <attribute name="Implementation-Version" value="${build.number}"/>
-
-                <attribute name="Main-Class" value="org.jetbrains.kotlin.preloading.Preloader"/>
-            </manifest>
-        </jar>
+        <pack-preloader jar-name="kotlin-preloader-sources.jar" implementation-title="${manifest.impl.title.kotlin.preloader}">
+            <jar-content>
+                <fileset dir="${basedir}/compiler/preloader/instrumentation/src" includes="**/*"/>
+                <fileset dir="${basedir}/compiler/preloader/src" includes="**/*"/>
+            </jar-content>
+        </pack-preloader>
     </target>
 
     <target name="serialize-builtins">
@@ -842,6 +841,31 @@
                     <attribute name="Implementation-Vendor" value="${manifest.impl.vendor}"/>
                     <attribute name="Implementation-Title" value="@{implementation-title}"/>
                     <attribute name="Implementation-Version" value="${build.number}"/>
+                </manifest>
+            </jar>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="pack-preloader">
+        <attribute name="jar-name"/>
+        <attribute name="implementation-title"/>
+        <element name="jar-content"/>
+
+        <sequential>
+            <delete file="${kotlin-home}/lib/@{jar-name}" failonerror="false"/>
+
+            <jar destfile="${kotlin-home}/lib/@{jar-name}" duplicate="fail">
+                <jar-content/>
+                <zipfileset file="${kotlin-home}/build.txt" prefix="META-INF"/>
+
+                <manifest>
+                    <attribute name="Built-By" value="${manifest.impl.vendor}"/>
+
+                    <attribute name="Implementation-Vendor" value="${manifest.impl.vendor}"/>
+                    <attribute name="Implementation-Title" value="${manifest.impl.title.kotlin.preloader}"/>
+                    <attribute name="Implementation-Version" value="${build.number}"/>
+
+                    <attribute name="Main-Class" value="org.jetbrains.kotlin.preloading.Preloader"/>
                 </manifest>
             </jar>
         </sequential>
