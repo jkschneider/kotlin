@@ -61,7 +61,6 @@ public class ExpressionTypingServices {
 
     private Project project;
     private CallResolver callResolver;
-    private TypeResolver typeResolver;
     private AnnotationResolver annotationResolver;
     private StatementFilter statementFilter;
     private KotlinBuiltIns builtIns;
@@ -84,16 +83,6 @@ public class ExpressionTypingServices {
     @Inject
     public void setCallResolver(@NotNull CallResolver callResolver) {
         this.callResolver = callResolver;
-    }
-
-    @NotNull
-    public TypeResolver getTypeResolver() {
-        return typeResolver;
-    }
-
-    @Inject
-    public void setTypeResolver(@NotNull TypeResolver typeResolver) {
-        this.typeResolver = typeResolver;
     }
 
     @NotNull

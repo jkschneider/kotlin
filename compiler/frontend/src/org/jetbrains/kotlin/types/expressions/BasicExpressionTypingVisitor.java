@@ -148,7 +148,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
 
         boolean allowBareTypes = BARE_TYPES_ALLOWED.contains(operationType);
         TypeResolutionContext typeResolutionContext = new TypeResolutionContext(context.scope, context.trace, true, allowBareTypes);
-        PossiblyBareType possiblyBareTarget = components.expressionTypingServices.getTypeResolver().resolvePossiblyBareType(typeResolutionContext, right);
+        PossiblyBareType possiblyBareTarget = components.typeResolver.resolvePossiblyBareType(typeResolutionContext, right);
 
         if (operationType == JetTokens.COLON) {
             // We do not allow bare types on static assertions, because static assertions provide an expected type for their argument,
@@ -286,7 +286,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
     private JetTypeInfo errorInSuper(JetSuperExpression expression, ExpressionTypingContext context) {
         JetTypeReference superTypeQualifier = expression.getSuperTypeQualifier();
         if (superTypeQualifier != null) {
-            components.expressionTypingServices.getTypeResolver().resolveType(context.scope, superTypeQualifier, context.trace, true);
+            components.typeResolver.resolveType(context.scope, superTypeQualifier, context.trace, true);
         }
         return JetTypeInfo.create(null, context.dataFlowInfo);
     }
@@ -312,15 +312,15 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
                 JetUserType userType = (JetUserType) typeElement;
                 // This may be just a superclass name even if the superclass is generic
                 if (userType.getTypeArguments().isEmpty()) {
-                    classifierCandidate = components.expressionTypingServices.getTypeResolver().resolveClass(context.scope, userType, context.trace);
+                    classifierCandidate = components.typeResolver.resolveClass(context.scope, userType, context.trace);
                 }
                 else {
-                    supertype = components.expressionTypingServices.getTypeResolver().resolveType(context.scope, superTypeQualifier, context.trace, true);
+                    supertype = components.typeResolver.resolveType(context.scope, superTypeQualifier, context.trace, true);
                     redundantTypeArguments = userType.getTypeArgumentList();
                 }
             }
             else {
-                supertype = components.expressionTypingServices.getTypeResolver().resolveType(context.scope, superTypeQualifier, context.trace, true);
+                supertype = components.typeResolver.resolveType(context.scope, superTypeQualifier, context.trace, true);
             }
 
             if (supertype != null) {
@@ -477,7 +477,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
         TypeResolutionContext context =
                 new TypeResolutionContext(c.scope, c.trace, /* checkBounds = */ false, /* allowBareTypes = */ true);
         PossiblyBareType possiblyBareType =
-                components.expressionTypingServices.getTypeResolver().resolvePossiblyBareType(context, typeReference);
+                components.typeResolver.resolvePossiblyBareType(context, typeReference);
 
         JetType type = null;
         if (possiblyBareType.isBare()) {
@@ -545,7 +545,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
         JetType receiverType =
                 typeReference == null
                 ? null
-                : components.expressionTypingServices.getTypeResolver().resolveType(c.scope, typeReference, c.trace, false);
+                : components.typeResolver.resolveType(c.scope, typeReference, c.trace, false);
 
         JetSimpleNameExpression callableReference = expression.getCallableReference();
         if (callableReference.getReferencedName().isEmpty()) {

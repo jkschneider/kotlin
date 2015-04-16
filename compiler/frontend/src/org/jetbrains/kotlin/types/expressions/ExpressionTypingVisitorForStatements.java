@@ -331,7 +331,7 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
         JetExpression left = deparenthesizeWithResolutionStrategy(leftOperand, true, new Function<JetTypeReference, Void>() {
             @Override
             public Void apply(JetTypeReference reference) {
-                components.expressionTypingServices.getTypeResolver().resolveType(context.scope, reference, context.trace, true);
+                components.typeResolver.resolveType(context.scope, reference, context.trace, true);
                 return null;
             }
         });

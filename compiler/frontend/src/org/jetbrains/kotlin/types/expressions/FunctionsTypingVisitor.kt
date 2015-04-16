@@ -186,7 +186,7 @@ public class FunctionsTypingVisitor(facade: ExpressionTypingInternals) : Express
     ): JetType? {
         val functionLiteral = expression.getFunctionLiteral()
         val declaredReturnType = functionLiteral.getTypeReference()?.let {
-            val type = components.expressionTypingServices.getTypeResolver().resolveType(context.scope, it, context.trace, true)
+            val type = components.typeResolver.resolveType(context.scope, it, context.trace, true)
             if (expectedReturnType != null && !JetTypeChecker.DEFAULT.isSubtypeOf(type, expectedReturnType)) {
                 context.trace.report(EXPECTED_RETURN_TYPE_MISMATCH.on(it, expectedReturnType))
             }
