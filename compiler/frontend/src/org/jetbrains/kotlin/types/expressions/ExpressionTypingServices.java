@@ -24,14 +24,12 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor;
 import org.jetbrains.kotlin.descriptors.ScriptDescriptor;
-import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.lexer.JetTokens;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.*;
 import org.jetbrains.kotlin.resolve.calls.context.ContextDependency;
 import org.jetbrains.kotlin.resolve.calls.context.ResolutionContext;
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo;
-import org.jetbrains.kotlin.resolve.constants.evaluate.ConstantExpressionEvaluator;
 import org.jetbrains.kotlin.resolve.scopes.JetScope;
 import org.jetbrains.kotlin.resolve.scopes.WritableScope;
 import org.jetbrains.kotlin.resolve.scopes.WritableScopeImpl;
@@ -299,47 +297,4 @@ public class ExpressionTypingServices {
         return result;
     }
 
-    public void resolveValueParameters(
-            @NotNull List<JetParameter> valueParameters,
-            @NotNull List<ValueParameterDescriptor> valueParameterDescriptors,
-            @NotNull JetScope declaringScope,
-            @NotNull DataFlowInfo dataFlowInfo,
-            @NotNull BindingTrace trace
-    ) {
-        resolveValueParameters(
-                valueParameters, valueParameterDescriptors,
-                ExpressionTypingContext.newContext(expressionTypingComponents.additionalCheckerProvider, trace, declaringScope, dataFlowInfo, NO_EXPECTED_TYPE));
-    }
-
-    public void resolveValueParameters(
-            @NotNull List<JetParameter> valueParameters,
-            @NotNull List<ValueParameterDescriptor> valueParameterDescriptors,
-            @NotNull ExpressionTypingContext context
-    ) {
-        for (int i = 0; i < valueParameters.size(); i++) {
-            ValueParameterDescriptor valueParameterDescriptor = valueParameterDescriptors.get(i);
-            JetParameter jetParameter = valueParameters.get(i);
-
-            AnnotationResolver.resolveAnnotationsArguments(jetParameter.getModifierList(), context.trace);
-
-            resolveDefaultValue(valueParameterDescriptor, jetParameter, context);
-        }
-    }
-
-    private void resolveDefaultValue(
-            @NotNull ValueParameterDescriptor valueParameterDescriptor,
-            @NotNull JetParameter jetParameter,
-            @NotNull ExpressionTypingContext context
-    ) {
-        if (valueParameterDescriptor.hasDefaultValue()) {
-            JetExpression defaultValue = jetParameter.getDefaultValue();
-            if (defaultValue != null) {
-                getTypeInfo(defaultValue, context.replaceExpectedType(valueParameterDescriptor.getType()));
-                if (DescriptorUtils.isAnnotationClass(DescriptorResolver.getContainingClass(context.scope))) {
-                    ConstantExpressionEvaluator.evaluate(
-                            defaultValue, context.trace, valueParameterDescriptor.getType());
-                }
-            }
-        }
-    }
 }

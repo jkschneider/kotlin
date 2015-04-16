@@ -18,24 +18,22 @@ package org.jetbrains.kotlin.types.expressions
 
 import com.google.common.collect.Lists
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
-import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
-import org.jetbrains.kotlin.descriptors.impl.FunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
-import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.diagnostics.DiagnosticUtils
 import org.jetbrains.kotlin.diagnostics.Errors.*
-import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.*
-import org.jetbrains.kotlin.resolve.BindingContext.AUTO_CREATED_IT
 import org.jetbrains.kotlin.resolve.BindingContext.EXPECTED_RETURN_TYPE
 import org.jetbrains.kotlin.resolve.BindingContext.EXPRESSION_TYPE
-import org.jetbrains.kotlin.resolve.calls.context.ResolutionContext
 import org.jetbrains.kotlin.resolve.scopes.WritableScope
 import org.jetbrains.kotlin.resolve.source.toSourceElement
-import org.jetbrains.kotlin.types.*
+import org.jetbrains.kotlin.types.CommonSupertypes
+import org.jetbrains.kotlin.types.JetType
+import org.jetbrains.kotlin.types.JetTypeInfo
 import org.jetbrains.kotlin.types.TypeUtils.CANT_INFER_FUNCTION_PARAM_TYPE
 import org.jetbrains.kotlin.types.TypeUtils.NO_EXPECTED_TYPE
 import org.jetbrains.kotlin.types.TypeUtils.noExpectedType
@@ -91,7 +89,7 @@ public class FunctionsTypingVisitor(facade: ExpressionTypingInternals) : Express
                 functionInnerScope, function, functionDescriptor, context.dataFlowInfo, null, context.trace
         )
 
-        components.expressionTypingServices.resolveValueParameters(
+        components.valueParameterResolver.resolveValueParameters(
                 function.getValueParameters(), functionDescriptor.getValueParameters(), context.scope, context.dataFlowInfo, context.trace
         )
 

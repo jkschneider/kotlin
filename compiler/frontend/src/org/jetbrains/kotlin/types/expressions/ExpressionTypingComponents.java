@@ -46,6 +46,7 @@ public class ExpressionTypingComponents {
     /*package*/ DescriptorResolver descriptorResolver;
     /*package*/ TypeResolver typeResolver;
     /*package*/ AnnotationResolver annotationResolver;
+    /*package*/ ValueParameterResolver valueParameterResolver;
 
     @Inject
     public void setGlobalContext(@NotNull GlobalContext globalContext) {
@@ -130,6 +131,11 @@ public class ExpressionTypingComponents {
     @Inject
     public void setAnnotationResolver(AnnotationResolver annotationResolver) {
         this.annotationResolver = annotationResolver;
+    }
+
+    @Inject
+    public void setValueParameterResolver(ValueParameterResolver valueParameterResolver) {
+        this.valueParameterResolver = valueParameterResolver;
     }
 
     @NotNull
