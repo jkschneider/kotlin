@@ -163,7 +163,7 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
 
     @Override
     public JetTypeInfo visitMultiDeclaration(@NotNull JetMultiDeclaration multiDeclaration, ExpressionTypingContext context) {
-        components.expressionTypingServices.getAnnotationResolver().resolveAnnotationsWithArguments(
+        components.annotationResolver.resolveAnnotationsWithArguments(
                 scope, multiDeclaration.getModifierList(), context.trace);
 
         JetExpression initializer = multiDeclaration.getInitializer();

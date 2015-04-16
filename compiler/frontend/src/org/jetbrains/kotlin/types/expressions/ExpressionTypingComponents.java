@@ -20,10 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns;
 import org.jetbrains.kotlin.context.GlobalContext;
 import org.jetbrains.kotlin.platform.PlatformToKotlinClassMap;
-import org.jetbrains.kotlin.resolve.AdditionalCheckerProvider;
-import org.jetbrains.kotlin.resolve.DescriptorResolver;
-import org.jetbrains.kotlin.resolve.FunctionDescriptorResolver;
-import org.jetbrains.kotlin.resolve.TypeResolver;
+import org.jetbrains.kotlin.resolve.*;
 import org.jetbrains.kotlin.resolve.calls.CallExpressionResolver;
 import org.jetbrains.kotlin.resolve.calls.CallResolver;
 import org.jetbrains.kotlin.types.DynamicTypesSettings;
@@ -48,6 +45,7 @@ public class ExpressionTypingComponents {
     /*package*/ CallExpressionResolver callExpressionResolver;
     /*package*/ DescriptorResolver descriptorResolver;
     /*package*/ TypeResolver typeResolver;
+    /*package*/ AnnotationResolver annotationResolver;
 
     @Inject
     public void setGlobalContext(@NotNull GlobalContext globalContext) {
@@ -127,6 +125,11 @@ public class ExpressionTypingComponents {
     @Inject
     public void setTypeResolver(TypeResolver typeResolver) {
         this.typeResolver = typeResolver;
+    }
+
+    @Inject
+    public void setAnnotationResolver(AnnotationResolver annotationResolver) {
+        this.annotationResolver = annotationResolver;
     }
 
     @NotNull
