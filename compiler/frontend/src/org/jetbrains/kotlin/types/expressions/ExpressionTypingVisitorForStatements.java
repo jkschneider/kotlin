@@ -177,7 +177,7 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
         if (expressionReceiver == null) {
             return JetTypeInfo.create(null, dataFlowInfo);
         }
-        components.expressionTypingUtils.defineLocalVariablesFromMultiDeclaration(scope, multiDeclaration, expressionReceiver, initializer, context);
+        components.multiDeclarationResolver.defineLocalVariablesFromMultiDeclaration(scope, multiDeclaration, expressionReceiver, initializer, context);
         return DataFlowUtils.checkStatementType(multiDeclaration, context, dataFlowInfo);
     }
 

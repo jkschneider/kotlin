@@ -33,7 +33,6 @@ public class ExpressionTypingComponents {
     /*package*/ ExpressionTypingServices expressionTypingServices;
     /*package*/ CallResolver callResolver;
     /*package*/ PlatformToKotlinClassMap platformToKotlinClassMap;
-    /*package*/ ExpressionTypingUtils expressionTypingUtils;
     /*package*/ ControlStructureTypingUtils controlStructureTypingUtils;
     /*package*/ ForLoopConventionsChecker forLoopConventionsChecker;
     /*package*/ ReflectionTypes reflectionTypes;
@@ -47,6 +46,7 @@ public class ExpressionTypingComponents {
     /*package*/ TypeResolver typeResolver;
     /*package*/ AnnotationResolver annotationResolver;
     /*package*/ ValueParameterResolver valueParameterResolver;
+    /*package*/ MultiDeclarationResolver multiDeclarationResolver;
 
     @Inject
     public void setGlobalContext(@NotNull GlobalContext globalContext) {
@@ -66,11 +66,6 @@ public class ExpressionTypingComponents {
     @Inject
     public void setPlatformToKotlinClassMap(@NotNull PlatformToKotlinClassMap platformToKotlinClassMap) {
         this.platformToKotlinClassMap = platformToKotlinClassMap;
-    }
-
-    @Inject
-    public void setExpressionTypingUtils(@NotNull ExpressionTypingUtils expressionTypingUtils) {
-        this.expressionTypingUtils = expressionTypingUtils;
     }
 
     @Inject
@@ -136,6 +131,11 @@ public class ExpressionTypingComponents {
     @Inject
     public void setValueParameterResolver(ValueParameterResolver valueParameterResolver) {
         this.valueParameterResolver = valueParameterResolver;
+    }
+
+    @Inject
+    public void setMultiDeclarationResolver(MultiDeclarationResolver multiDeclarationResolver) {
+        this.multiDeclarationResolver = multiDeclarationResolver;
     }
 
     @NotNull

@@ -25,6 +25,7 @@ import kotlin.Function1;
 import kotlin.KotlinPackage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.JetNodeTypes;
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns;
 import org.jetbrains.kotlin.descriptors.*;
 import org.jetbrains.kotlin.descriptors.annotations.Annotations;
@@ -125,12 +126,35 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
             boolean hasError = compileTimeConstantChecker.checkConstantExpressionType(value, expression, context.expectedType);
             if (hasError) {
                 IElementType elementType = expression.getNode().getElementType();
-                return JetTypeInfo.create(components.expressionTypingUtils.getDefaultType(elementType), context.dataFlowInfo);
+                return JetTypeInfo.create(getDefaultType(elementType), context.dataFlowInfo);
             }
         }
 
         assert value != null : "CompileTimeConstant should be evaluated for constant expression or an error should be recorded " + expression.getText();
         return createCompileTimeConstantTypeInfo(value, expression, context);
+    }
+
+    @NotNull
+    public JetType getDefaultType(IElementType constantType) {
+        KotlinBuiltIns builtIns = components.builtIns;
+        if (constantType == JetNodeTypes.INTEGER_CONSTANT) {
+            return builtIns.getIntType();
+        }
+        else if (constantType == JetNodeTypes.FLOAT_CONSTANT) {
+            return builtIns.getDoubleType();
+        }
+        else if (constantType == JetNodeTypes.BOOLEAN_CONSTANT) {
+            return builtIns.getBooleanType();
+        }
+        else if (constantType == JetNodeTypes.CHARACTER_CONSTANT) {
+            return builtIns.getCharType();
+        }
+        else if (constantType == JetNodeTypes.NULL) {
+            return builtIns.getNullableNothingType();
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported constant type: " + constantType);
+        }
     }
 
     @Override
@@ -1157,7 +1181,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
 
         if (resolutionResults.isSuccess()) {
             FunctionDescriptor equals = resolutionResults.getResultingCall().getResultingDescriptor();
-            if (components.expressionTypingUtils.ensureBooleanResult(operationSign, OperatorConventions.EQUALS, equals.getReturnType(),
+            if (ensureBooleanResult(operationSign, OperatorConventions.EQUALS, equals.getReturnType(),
                                                                      context)) {
                 ensureNonemptyIntersectionOfOperandTypes(expression, context);
             }
@@ -1291,13 +1315,29 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
                 operationSign,
                 OperatorConventions.CONTAINS);
         JetType containsType = OverloadResolutionResultsUtil.getResultingType(resolutionResult, context.contextDependency);
-        components.expressionTypingUtils.ensureBooleanResult(operationSign, OperatorConventions.CONTAINS, containsType, context);
+        ensureBooleanResult(operationSign, OperatorConventions.CONTAINS, containsType, context);
 
         if (left != null) {
             dataFlowInfo = facade.getTypeInfo(left, contextWithDataFlow).getDataFlowInfo().and(dataFlowInfo);
         }
 
         return JetTypeInfo.create(resolutionResult.isSuccess() ? components.builtIns.getBooleanType() : null, dataFlowInfo);
+    }
+
+
+    private boolean ensureBooleanResult(JetExpression operationSign, Name name, JetType resultType, ExpressionTypingContext context) {
+        return ensureBooleanResultWithCustomSubject(operationSign, resultType, "'" + name + "'", context);
+    }
+
+    private boolean ensureBooleanResultWithCustomSubject(JetExpression operationSign, JetType resultType, String subjectName, ExpressionTypingContext context) {
+        if (resultType != null) {
+            // TODO : Relax?
+            if (!components.builtIns.isBooleanOrSubtype(resultType)) {
+                context.trace.report(RESULT_TYPE_MISMATCH.on(operationSign, subjectName, components.builtIns.getBooleanType(), resultType));
+                return false;
+            }
+        }
+        return true;
     }
 
     private void ensureNonemptyIntersectionOfOperandTypes(JetBinaryExpression expression, final ExpressionTypingContext context) {

@@ -132,7 +132,7 @@ public class JetExpectedResolveDataUtil {
                 injector.getAdditionalCheckerProvider(), new BindingTraceContext(), classDescriptor.getDefaultType().getMemberScope(),
                 DataFlowInfo.EMPTY, TypeUtils.NO_EXPECTED_TYPE);
 
-        OverloadResolutionResults<FunctionDescriptor> functions = injector.getExpressionTypingUtils().resolveFakeCall(
+        OverloadResolutionResults<FunctionDescriptor> functions = injector.getFakeCallResolver().resolveFakeCall(
                 context, ReceiverValue.NO_RECEIVER, Name.identifier(name), null, parameterTypes);
 
         for (ResolvedCall<? extends FunctionDescriptor> resolvedCall : functions.getResultingCalls()) {

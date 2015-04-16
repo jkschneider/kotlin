@@ -46,9 +46,7 @@ import static org.jetbrains.kotlin.diagnostics.Errors.*;
 import static org.jetbrains.kotlin.psi.PsiPackage.JetPsiFactory;
 import static org.jetbrains.kotlin.resolve.BindingContext.*;
 import static org.jetbrains.kotlin.resolve.calls.context.ContextDependency.INDEPENDENT;
-import static org.jetbrains.kotlin.types.TypeUtils.NO_EXPECTED_TYPE;
-import static org.jetbrains.kotlin.types.TypeUtils.isDontCarePlaceholder;
-import static org.jetbrains.kotlin.types.TypeUtils.noExpectedType;
+import static org.jetbrains.kotlin.types.TypeUtils.*;
 import static org.jetbrains.kotlin.types.expressions.ControlStructureTypingUtils.createCallForSpecialConstruction;
 import static org.jetbrains.kotlin.types.expressions.ControlStructureTypingUtils.createDataFlowInfoForArgumentsForIfCall;
 import static org.jetbrains.kotlin.types.expressions.ExpressionTypingUtils.*;
@@ -328,8 +326,9 @@ public class ControlStructureTypingVisitor extends ExpressionTypingVisitor {
             if (multiParameter != null && loopRange != null) {
                 JetType elementType = expectedParameterType == null ? ErrorUtils.createErrorType("Loop range has no type") : expectedParameterType;
                 TransientReceiver iteratorNextAsReceiver = new TransientReceiver(elementType);
-                components.expressionTypingUtils.defineLocalVariablesFromMultiDeclaration(loopScope, multiParameter, iteratorNextAsReceiver,
-                                                                                          loopRange, context);
+                components.multiDeclarationResolver.defineLocalVariablesFromMultiDeclaration(
+                        loopScope, multiParameter, iteratorNextAsReceiver, loopRange, context
+                );
             }
         }
 
