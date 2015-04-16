@@ -105,7 +105,7 @@ public open class KotlinCompile() : AbstractKotlinCompile<K2JVMCompilerArguments
         args.pluginClasspaths = extraProperties.get("compilerPluginClasspaths") as? Array<String>
         args.pluginOptions = extraProperties.get("compilerPluginArguments") as? Array<String>
         // show kotlin compiler where to look for java source files
-        args.freeArgs = args.freeArgs + getJavaSourceRoots().map { it.getAbsolutePath() }
+        args.freeArgs = (args.freeArgs + getJavaSourceRoots().map { it.getAbsolutePath() }).toSet().toList()
 
         if (StringUtils.isEmpty(kotlinOptions.classpath)) {
             args.classpath = getClasspath().filter({ it != null && it.exists() }).joinToString(File.pathSeparator)
