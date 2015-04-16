@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns;
 import org.jetbrains.kotlin.context.GlobalContext;
 import org.jetbrains.kotlin.platform.PlatformToKotlinClassMap;
 import org.jetbrains.kotlin.resolve.AdditionalCheckerProvider;
+import org.jetbrains.kotlin.resolve.FunctionDescriptorResolver;
 import org.jetbrains.kotlin.resolve.calls.CallResolver;
 import org.jetbrains.kotlin.types.DynamicTypesSettings;
 import org.jetbrains.kotlin.types.reflect.ReflectionTypes;
@@ -40,6 +41,7 @@ public class ExpressionTypingComponents {
     /*package*/ DynamicTypesSettings dynamicTypesSettings;
     /*package*/ KotlinBuiltIns builtIns;
     /*package*/ LocalClassifierAnalyzer localClassifierAnalyzer;
+    /*package*/ FunctionDescriptorResolver functionDescriptorResolver;
 
     @Inject
     public void setGlobalContext(@NotNull GlobalContext globalContext) {
@@ -99,6 +101,12 @@ public class ExpressionTypingComponents {
     @Inject
     public void setLocalClassifierAnalyzer(@NotNull LocalClassifierAnalyzer localClassifierAnalyzer) {
         this.localClassifierAnalyzer = localClassifierAnalyzer;
+    }
+
+
+    @Inject
+    public void setFunctionDescriptorResolver(FunctionDescriptorResolver functionDescriptorResolver) {
+        this.functionDescriptorResolver = functionDescriptorResolver;
     }
 
     @NotNull
