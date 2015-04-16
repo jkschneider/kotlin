@@ -62,7 +62,6 @@ public class ExpressionTypingServices {
 
     private Project project;
     private CallResolver callResolver;
-    private CallExpressionResolver callExpressionResolver;
     private DescriptorResolver descriptorResolver;
     private TypeResolver typeResolver;
     private AnnotationResolver annotationResolver;
@@ -87,16 +86,6 @@ public class ExpressionTypingServices {
     @Inject
     public void setCallResolver(@NotNull CallResolver callResolver) {
         this.callResolver = callResolver;
-    }
-
-    @NotNull
-    public CallExpressionResolver getCallExpressionResolver() {
-        return callExpressionResolver;
-    }
-
-    @Inject
-    public void setCallExpressionResolver(@NotNull CallExpressionResolver callExpressionResolver) {
-        this.callExpressionResolver = callExpressionResolver;
     }
 
     @NotNull

@@ -101,7 +101,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
     public JetTypeInfo visitSimpleNameExpression(@NotNull JetSimpleNameExpression expression, ExpressionTypingContext context) {
         // TODO : other members
         // TODO : type substitutions???
-        CallExpressionResolver callExpressionResolver = components.expressionTypingServices.getCallExpressionResolver();
+        CallExpressionResolver callExpressionResolver = components.callExpressionResolver;
         JetTypeInfo typeInfo = callExpressionResolver.getSimpleNameExpressionTypeInfo(expression, NO_RECEIVER, null, context);
         JetType type = DataFlowUtils.checkType(typeInfo.getType(), expression, context);
         return JetTypeInfo.create(type, typeInfo.getDataFlowInfo()); // TODO : Extensions to this
@@ -795,13 +795,13 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
 
     @Override
     public JetTypeInfo visitQualifiedExpression(@NotNull JetQualifiedExpression expression, ExpressionTypingContext context) {
-        CallExpressionResolver callExpressionResolver = components.expressionTypingServices.getCallExpressionResolver();
+        CallExpressionResolver callExpressionResolver = components.callExpressionResolver;
         return callExpressionResolver.getQualifiedExpressionTypeInfo(expression, context);
     }
 
     @Override
     public JetTypeInfo visitCallExpression(@NotNull JetCallExpression expression, ExpressionTypingContext context) {
-        CallExpressionResolver callExpressionResolver = components.expressionTypingServices.getCallExpressionResolver();
+        CallExpressionResolver callExpressionResolver = components.callExpressionResolver;
         return callExpressionResolver.getCallExpressionTypeInfo(expression, NO_RECEIVER, null, context);
     }
 
