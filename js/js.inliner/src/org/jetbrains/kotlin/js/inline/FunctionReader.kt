@@ -41,7 +41,7 @@ import java.io.File
  * Matches string like Kotlin.defineModule("stdlib", _)
  * Kotlin, _ can be renamed by minifier, quotes type can be changed too (" to ')
  */
-private val DEFINE_MODULE_PATTERN = "(\\w+)\\.defineModule\\(\\s*(['\"])(\\w+)\\2\\s*,\\s*(\\w+)\\s*\\)".toRegex()
+private val DEFINE_MODULE_PATTERN = "defineModule\\(\\s*(['\"])(\\w+)\\1\\s*,\\s*(\\w+)\\s*\\)".toRegex()
 
 public class FunctionReader(private val context: TranslationContext) {
     /**
@@ -71,9 +71,9 @@ public class FunctionReader(private val context: TranslationContext) {
             val matcher = DEFINE_MODULE_PATTERN.matcher(file)
 
             while (matcher.find()) {
-                val moduleName = matcher.group(3)
-                val moduleVariable = matcher.group(4)
-                val kotlinVariable = matcher.group(1)
+                val moduleName = matcher.group(2)
+                val moduleVariable = matcher.group(3)
+                val kotlinVariable = "Kotlin"
                 assert(moduleName !in moduleJsDefinition) { "Module is defined in more, than one file" }
                 moduleJsDefinition[moduleName] = file
                 moduleRootVariable[moduleName] = moduleVariable
